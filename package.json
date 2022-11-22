@@ -1,0 +1,22 @@
+{
+  "name": "sfumato",
+  "version": "1.0.0",
+  "description": "A digital market for artists and art lovers",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "RWABUJEGERI",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.32.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-validator": "^6.14.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.7.2",
+    "multer": "^1.4.5-lts.1",
+    "sharp": "^0.31.2"
+  }
+}
