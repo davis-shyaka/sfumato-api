@@ -44,8 +44,21 @@ exports.userSignIn = async (req, res) => {
     expiresIn: "1d",
   });
 
+  let oldTokens = user.tokens || [];
+  if (oldTokens.length) {
+    oldTokens = oldTokens.filter((token) => {
+      const timeDiff = (Date.now() - parseInt(token.signedAt)) / 1000;
+      if (timeDiff < 86400) {
+        return token;
+      }
+    });
+  }
+  await User.findByIdAndUpdate(user._id, {
+    tokens: [...oldTokens, { token, signedAt: Date.now().toString() }],
+  });
   const userInfo = {
     surname: user.surname,
+    givenName: user.givenName,
     email: user.email,
     avatar: user.avatar ? user.avatar : "",
   };
@@ -83,5 +96,30 @@ exports.uploadProfile = async (req, res) => {
       message: "Server Error: Try again after some time",
     });
     console.log("Error while uploading avatar: ", error.message);
+  }
+};
+
+// Sign Out
+exports.signOut = async (req, res, next) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Authorization failure",
+      });
+    }
+    const tokens = req.user.tokens;
+
+    const newTokens = tokens.filter((t) => t.token !== token);
+
+    try {
+      await User.findByIdAndUpdate(req.user._id, { tokens: newTokens });
+      res
+        .status(201)
+        .json({ success: true, message: "Signed Out Succesfully" });
+    } catch (error) {
+      console.log("Error while signing out: ", error.message);
+    }
   }
 };

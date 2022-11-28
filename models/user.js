@@ -33,6 +33,7 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   avatar: String,
+  tokens: [{ type: Object }],
 });
 
 userSchema.pre("save", function (next) {
