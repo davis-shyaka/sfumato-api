@@ -13,26 +13,14 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    // One Way to validate email duplicity
-    // validate: {
-    //   validator: async function (email) {
-    //     const user = await this.constructor.findOne({ email });
-    //     if (user) {
-    //       if (this.id === user.id) {
-    //         return true;
-    //       }
-    //       return false;
-    //     }
-    //     return true;
-    //   },
-    //   message: (props) => "The specified email address is already in use.",
-    // },
   },
   password: {
     type: String,
     required: true,
   },
-  avatar: String,
+  avatar: {
+    type: String,
+  },
   tokens: [{ type: Object }],
 });
 
@@ -69,4 +57,4 @@ userSchema.statics.isThisEmailInUse = async function (email) {
   }
 };
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("User", userSchema, "users");

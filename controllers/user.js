@@ -21,6 +21,24 @@ exports.createUser = async (req, res) => {
   res.json({ success: true, user });
 };
 
+// get user
+exports.getUser = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.params.id });
+    if (user) {
+      res.status(200);
+      res.send(user);
+    } else {
+      res.status(404);
+      res.send({ success: false, message: "user not found" });
+    }
+  } catch (error) {
+    res.status(404);
+    res.send({ success: false, message: "user doesn't exist!" });
+    console.log("Error fetching user: ", error.message);
+  }
+};
+
 // Sign In
 exports.userSignIn = async (req, res) => {
   const { email, password } = req.body;
@@ -57,6 +75,7 @@ exports.userSignIn = async (req, res) => {
     tokens: [...oldTokens, { token, signedAt: Date.now().toString() }],
   });
   const userInfo = {
+    id: user._id,
     surname: user.surname,
     givenName: user.givenName,
     email: user.email,
@@ -75,12 +94,6 @@ exports.uploadProfile = async (req, res) => {
   }
 
   try {
-    // const profileBuffer = req.file.buffer;
-    // const { width, height } = await sharp(profileBuffer).metadata();
-    // const avatar = await sharp(profileBuffer)
-    //   .resize(Math.round(width * 0.5), Math.round(height * 0.5))
-    //   .toBuffer();
-
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: "sfumato/userAvatars",
       public_id: `${user._id}_profile`,

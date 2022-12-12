@@ -9,7 +9,11 @@ const {
   userSignIn,
   uploadProfile,
   signOut,
+  getUser,
 } = require("../controllers/user");
+
+// const { createItem } = require("../controllers/item");
+
 const { isAuth } = require("../middleware/auth");
 const {
   validateUserSignUp,
@@ -19,6 +23,11 @@ const {
 
 const multer = require("multer");
 const User = require("../models/user");
+const {
+  validateItemCreation,
+  itemValidation,
+} = require("../middleware/validation/item");
+const { createItem } = require("../controllers/item");
 
 const storage = multer.diskStorage({});
 const fileFilter = (req, file, cb) => {
@@ -30,14 +39,19 @@ const fileFilter = (req, file, cb) => {
 };
 const uploads = multer({ storage, fileFilter });
 
+// User Routes
 router.post("/createUser", validateUserSignUp, userValidation, createUser);
+router.get("/users/:id", getUser);
 router.post("/signIn", validateUserSignIn, userValidation, userSignIn);
 router.post("/signOut", isAuth, signOut);
 router.post("/uploadProfile", isAuth, uploads.single("profile"), uploadProfile);
 
-// router.post("/createItem", isAuth, (req, res) => {
-//   // create an item
-//   res.send("Item added succesfully");
-// });
-
+// Item Routes
+router.post(
+  "/createItem",
+  isAuth,
+  validateItemCreation,
+  itemValidation,
+  createItem
+);
 module.exports = router;
